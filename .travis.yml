@@ -1,0 +1,59 @@
+
+language: python
+dist: trusty
+branches:
+ only:
+ - master
+ - staging
+ - production
+sudo: required
+chmod: +x
+services:
+  - docker
+before_install:
+script:
+  - deploy-ecs/travisCI/build-app-containers.sh
+after_success:
+  - 'curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"'
+  - 'unzip awscli-bundle.zip'
+  - './awscli-bundle/install -b ~/bin/aws'
+  - 'export PATH=~/bin:$PATH'
+  
+  ### CI environment variables 
+  # AWS_ACCESS_KEY
+  # AWS_SECRET_ACCESS_KEY
+  # AWS_ACCOUNT_ID
+  # AWS_DEFAULT_REGION  
+  # CLUSTER_NAME
+  ### Per environment
+  # SERVICE
+  # IMAGE_NAME
+
+  ######### Simple approach
+  # ### Push image to ECR
+  # - docker tag $LOCAL_IMAGE_NAME $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_NAME:$TRAVIS_COMMIT
+  # - eval $(aws ecr get-login --region $AWS_DEFAULT_REGION)
+  # - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_NAME:$TRAVIS_COMMIT
+
+  # ### Deploy latest image pushed to AWS ECR, updating Task Definition created for it from a docker-compose file, REF: https://github.com/sekka1/aws-cli-docker
+  # - chmod +x deploy/ecs-deploy.sh 
+  # - deploy/ecs-deploy.sh -c $CLUSTER_NAME -n $SERVICE -i $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_NAME:$TRAVIS_COMMIT
+
+  ######### Via scripts that check branches
+  - chmod +x deploy-ecs/travisCI/build-app-conatiners.sh
+  - deploy-ecs/travisCI/build-app-conatiners.sh
+
+  - chmod +x deploy-ecs/travisCI/push-ecr-based-on-branch-travis.sh
+  - deploy-ecs/travisCI/push-ecr-based-on-branch-travis.sh
+
+
+
+  ###### Do via Docker
+  # # - docker run --env AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY --env AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --env AWS_DEFAULT_REGION=us-east-1 garland/aws-cli-docker aws ecs run-task --cluster ecs-optimized --task-definition arn:aws:ecs:us-east-1:164239453146:task-definition/ecscompose-src --count 1
+  # - docker run 
+  #     --env AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --env AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION 
+  #     --env AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID --env COMMIT-SHA1=$TRAVIS_COMMIT --env revision=$TRAVIS_BUILD_NUMBER 
+  #     --env CLUSTER_NAME=$CLUSTER_NAME --env SERVICE_NAME=$SERVICE_NAME
+  #     -v $(pwd)/push-deploy-ecs.sh:/push-deploy-ecs.sh 
+  #     excellalabs/aws-terminal 
+  #       bash /push-deploy-ecs.sh 
