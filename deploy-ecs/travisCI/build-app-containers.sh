@@ -1,6 +1,6 @@
-ENV_SUFFIX="-stg"
+ENV_SUFFIX="-demo"
 if [ "$TRAVIS_BRANCH" == "master" ]; then 
-  ENV_SUFFIX="-dev"
+  ENV_SUFFIX="-demo"
 elif [ "$TRAVIS_BRANCH" == "staging" ]; then 
   ENV_SUFFIX="-stg"
 elif [ "$TRAVIS_BRANCH" == "production" ]; then 

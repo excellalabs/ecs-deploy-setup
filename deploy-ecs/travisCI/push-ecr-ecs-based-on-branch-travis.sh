@@ -20,7 +20,7 @@
 pushToEcr () {
     eval $(aws ecr get-login --region $AWS_DEFAULT_REGION)
         
-    echo "Pushing $1"
+    echo "Pushing $2 to $1"
     docker tag $2 $1
     docker push $1
     echo "Pushed $1"
@@ -34,9 +34,9 @@ pushToEcr () {
 
 if [ -z "$TRAVIS_PULL_REQUEST" ] || [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
 
-    ENV_SUFFIX="dev"
+    ENV_SUFFIX="-demo"
     if [ "$TRAVIS_BRANCH" == "master" ]; then 
-      ENV_SUFFIX="-dev"
+      ENV_SUFFIX="-demo"
     elif [ "$TRAVIS_BRANCH" == "staging" ]; then 
       ENV_SUFFIX="-stg"
     elif [ "$TRAVIS_BRANCH" == "production" ]; then 
@@ -51,6 +51,6 @@ if [ -z "$TRAVIS_PULL_REQUEST" ] || [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
 
     pushToEcr $IMAGE_URL $IMAGE_FULLNAME
     
-    echo "Deploying $TRAVIS_BRANCH on $SERVICE_FULLNAME"
+    echo "Deploying $TRAVIS_BRANCH on service $SERVICE_FULLNAME"
     deploy-ecs/ecs-deploy.sh -c $CLUSTER_NAME -n $SERVICE_FULLNAME -i $IMAGE_URL -r $AWS_DEFAULT_REGION
 fi 
