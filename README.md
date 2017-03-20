@@ -30,7 +30,7 @@ Steps:
     - AmazonEC2ContainerServiceFullAccess
     - AWSCertificateManagerFullAccess
     - AmazonRoute53FullAccess
-    - New policy called `ECSAdmin` with these permissions - all operations around ECS that are needed (i.e. creating the initial service, load balancers):
+    - New policy called `EC2ContainerServiceAdministration` with these permissions - all operations around ECS that are needed to set it up for an app (i.e. creating the initial service, load balancers):
 
         ```json
         {
@@ -134,15 +134,15 @@ Steps:
             }
             ```
 
-1. **Create role to use with the ECS cluster to create** called `ecsContainerRole` with this polciy, AmazonEC2ContainerServiceforEC2Role 
+1. **Create role to use with the ECS cluster to create** called `ecsInstanceRole` with this polciy, AmazonEC2ContainerServiceforEC2Role 
 
-1. **Create a group and account allowed to deploy containers** (via updating services, creating tasks, not task definitions). 
+1. **Create a group and user allowed to deploy containers** (via updating services, creating tasks, not task definitions). 
 
-    1. Create a group for the needed perimssions called `ecsDeploy` and put user in
+    1. Create a group for the needed perimssions called `EcsDeploy`. Create a user and put it in.
 
     1. Add this policy the group: AmazonEC2ContainerRegistryFullAccess policy (allows ECR registry creation & pushing, but not management of ECS services, tasks, etc)
 
-    1. Create and add a new new policy to the group with these permissions (deploying ECS only, but not setting up app via service/etc)
+    1. Create and add a new policy called `EC2ContainerServiceDeploy` to the group with these permissions (deploying ECS only, but not setting up app via service/etc)
 
         ```json
         {
@@ -199,15 +199,23 @@ Steps:
 
 1. Create AWS certificate in the ACM service to be used with the app's secured URLs via a load balancer.
 
+TODO: - AFTER TASK DEF & SVC (APP START)?
 1. Set up load balancer:
     1. Create load balancer.
-    1. Use VPC used in sec. group for ECS EC2 instance.
+    1. Use VPC used in sec. group for ECS EC2 instance, and that sec. group for the load balancer. Check that you can hit app via DNS name for created load balancer. 
+    1. Set up subdomain for already registered domain name:
+        1. Create a hosted zone for the subdomain/etc you want to host using AWS Route 53. 
+        1. Add resource record sets for the new subdomain to Route 53 hosted zone. 
+        1. Update the DNS service for the parent domain by adding name server records for the subdomain. 
+
     1. Add endpoints for each task definition (app instance / environment)
         - Development: port https/44443 to container port 8080; http/8080 to 8080 (health check)
         - Staging: port https/44444 to container on port 8082; 8082 to 8082 (health check)
         - Production: https/443 to container on port 80; 80 to 80 (health check)
     1. Select 2 availability zones
     1. ***!*** Use certificate created above to create URLs for each   & use latest predefined policy
+        1. Update domain name registrar with name service records for subdomain created in AWS.
+        1. TODO: Set up load balancer to point to dev/stg/prod 
     1. Make sure security group allows desired incoming ports
     1. Set up health check to hit open endpoint
 
@@ -217,7 +225,7 @@ Steps:
 
 1. Create the task deinitions in ECS, by going into the ECS UI, going to Task Definitions and creating one. You can paste in the task definition json.
 
-1. Create a service for each instance of the app (dev/stg/prod): go to ECS > Clusters > desired cluster and creating one. Choosing the task definition. Repeat for each environment. This should start your app instances.
+1. Create a service for each instance of the app (dev/stg/prod): go to ECS > Clusters > desired cluster and creating one. Choosing the task definition, and set the minumum healthy count to 0 (so all containers can be stopped before starting an updated one). Repeat for each environment. This should start your app instances.
 
 ## *Part 3.* Setting up CI for deployment
 

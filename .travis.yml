@@ -40,11 +40,9 @@ after_success:
   # - deploy/ecs-deploy.sh -c $CLUSTER_NAME -n $SERVICE -i $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_NAME:$TRAVIS_COMMIT
 
   ######### Via scripts that check branches
-  - chmod +x deploy-ecs/travisCI/build-app-conatiners.sh
-  - deploy-ecs/travisCI/build-app-conatiners.sh
-
-  - chmod +x deploy-ecs/travisCI/push-ecr-based-on-branch-travis.sh
-  - deploy-ecs/travisCI/push-ecr-based-on-branch-travis.sh
+  - chmod +x deploy-ecs/travisCI/push-ecr-ecs-based-on-branch-travis.sh
+  - chmod +x deploy-ecs/ecs-deploy.sh
+  - deploy-ecs/travisCI/push-ecr-ecs-based-on-branch-travis.sh
 
 
 

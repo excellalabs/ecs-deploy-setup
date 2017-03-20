@@ -1,0 +1,105 @@
+{
+    "networkMode": "bridge",
+    "taskRoleArn": null,
+    "containerDefinitions": [
+        {
+            "volumesFrom": [],
+            "memory": 366,
+            "extraHosts": null,
+            "dnsServers": [],
+            "disableNetworking": null,
+            "dnsSearchDomains": [],
+            "portMappings": [
+                {
+                    "hostPort": 80,
+                    "containerPort": 5002,
+                    "protocol": "tcp"
+                },
+                {
+                    "hostPort": 443,
+                    "containerPort": 5002,
+                    "protocol": "tcp"
+                }
+            ],
+            "hostname": null,
+            "essential": true,
+            "entryPoint": [
+                "sh",
+                "./go.sh"
+            ],
+            "mountPoints": [],
+            "name": "defic-svc-prod",
+            "ulimits": null,
+            "dockerSecurityOptions": [],
+            "environment": [],
+            "links": [
+                "postgres-defic"
+            ],
+            "workingDirectory": null,
+            "readonlyRootFilesystem": false,
+            "image": "<ACCOUNT ID>.dkr.ecr.us-east-1.amazonaws.com/defic-svc",
+            "command": [],
+            "user": null,
+            "dockerLabels": {},
+            "logConfiguration": null,
+            "cpu": 0,
+            "privileged": false,
+            "memoryReservation": null
+        },
+        {
+            "volumesFrom": [],
+            "memory": 366,
+            "extraHosts": null,
+            "dnsServers": [],
+            "disableNetworking": null,
+            "dnsSearchDomains": [],
+            "portMappings": [
+                {
+                    "hostPort": 5435,
+                    "containerPort": 5435,
+                    "protocol": "tcp"
+                }
+            ],
+            "hostname": null,
+            "essential": true,
+            "entryPoint": [],
+            "mountPoints": [
+                {
+                    "containerPath": "/var/lib/postgresql/data",
+                    "sourceVolume": "volume-0",
+                    "readOnly": false
+                }
+            ],
+            "name": "postgres-defic",
+            "ulimits": null,
+            "dockerSecurityOptions": [],
+            "environment": [
+                {
+                    "name": "POSTGRES_PASSWORD",
+                    "value": "password"
+                }
+            ],
+            "links": [],
+            "workingDirectory": null,
+            "readonlyRootFilesystem": false,
+            "image": "postgres",
+            "command": [],
+            "user": null,
+            "dockerLabels": {},
+            "logConfiguration": null,
+            "cpu": 0,
+            "privileged": false,
+            "memoryReservation": null
+        }
+    ],
+    "placementConstraints": [],
+    "volumes": [
+        {
+            "host": {
+                "sourcePath": "postgres"
+            },
+            "name": "volume-0"
+        }
+    ],
+    "family": "defic-svc-prod"
+}
