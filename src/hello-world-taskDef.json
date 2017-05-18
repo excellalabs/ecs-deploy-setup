@@ -1,0 +1,36 @@
+{
+    "networkMode": "bridge",
+    "taskRoleArn": null,
+    "containerDefinitions": [
+        {
+            "memory": 300,
+            "portMappings": [
+                {
+                    "hostPort": 80,
+                    "containerPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "entryPoint": [
+                "sh",
+                "-c"
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "awslogs-test",
+                    "awslogs-region": "us-west-2",
+                    "awslogs-stream-prefix": "nginx"
+                }
+            },
+            "name": "simple-app",
+            "image": "httpd:2.4",
+            "command": [
+                "/bin/sh -c \"echo 'Congratulations! Your application is now running on a container in Amazon ECS.'  > /usr/local/apache2/htdocs/index.html && httpd-foreground\""
+            ],
+            "cpu": 10
+        }
+    ],
+    "family": "cw-logs-example"
+}

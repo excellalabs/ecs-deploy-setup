@@ -1,0 +1,42 @@
+version: '2'
+
+services:
+
+  api:
+    container_name: 'skillu_api'
+    image: 'excellalabs/skillustrator-api'
+    ports:
+      - "8080:5000"
+    depends_on:
+      - postgres
+    networks:
+      - aspnetcoreapp-network
+
+  ui:
+    container_name: 'skillu_ui'
+    image: 'excellalabs/skillustrator-ui'
+    ports:
+      - "80:4200"
+    links:
+      - api
+    depends_on:
+      - api
+    networks:
+      - aspnetcoreapp-network
+
+  postgres:
+    container_name: 'skillustrator-postgres'
+    image: postgres
+    volumes:
+      - 'postgres:/var/lib/postgresql/data'
+    environment:
+      POSTGRES_PASSWORD: password
+    networks:
+      - aspnetcoreapp-network
+
+networks:
+  aspnetcoreapp-network:
+    driver: bridge
+
+volumes:
+  postgres: {}

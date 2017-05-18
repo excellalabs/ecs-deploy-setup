@@ -7,5 +7,5 @@ elif [ "$TRAVIS_BRANCH" == "production" ]; then
   ENV_SUFFIX="-prod"
 fi
 
-docker-compose -f src/docker-compose$ENV_SUFFIX.yml build
-docker-compose -f src/docker-compose$ENV_SUFFIX.yml up -d && docker ps
+docker-compose -f src/docker-compose-skillustrator$ENV_SUFFIX.yml build
+docker-compose -f src/docker-compose-skillustrator$ENV_SUFFIX.yml up -d && docker ps

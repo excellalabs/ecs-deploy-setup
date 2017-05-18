@@ -1,6 +1,6 @@
 # Deploying a container-based app to ECS via CI
 
-Sample that covers deploying a container-based app to ECS via CI (including IAM account setup)
+do
 
 ## ECS Deployment Process Overview
 
@@ -199,33 +199,27 @@ Steps:
 
 1. Create AWS certificate in the ACM service to be used with the app's secured URLs via a load balancer.
 
-TODO: - AFTER TASK DEF & SVC (APP START)?
 1. Set up load balancer:
-    1. Create load balancer.
+    1. Create application load balancer.
     1. Use VPC used in sec. group for ECS EC2 instance, and that sec. group for the load balancer. Check that you can hit app via DNS name for created load balancer. 
     1. Set up subdomain for already registered domain name:
         1. Create a hosted zone for the subdomain/etc you want to host using AWS Route 53. 
         1. Add resource record sets for the new subdomain to Route 53 hosted zone. 
-        1. Update the DNS service for the parent domain by adding name server records for the subdomain. 
-
-    1. Add endpoints for each task definition (app instance / environment)
-        - Development: port https/44443 to container port 8080; http/8080 to 8080 (health check)
-        - Staging: port https/44444 to container on port 8082; 8082 to 8082 (health check)
+        1. Update the DNS service for the parent domain by adding name server records for the subdomain provided in hosted zone record. 
+    1. Add endpoints for each task definition (app instance / environment) using AWS certificate 
+        - Development: port https/44300 to container port 8080; http/8080 to 8080 (health check)
+        - Staging: port https/44301 to container on port 8081; 8081 to 8081 (health check)
         - Production: https/443 to container on port 80; 80 to 80 (health check)
     1. Select 2 availability zones
-    1. ***!*** Use certificate created above to create URLs for each   & use latest predefined policy
-        1. Update domain name registrar with name service records for subdomain created in AWS.
-        1. TODO: Set up load balancer to point to dev/stg/prod 
     1. Make sure security group allows desired incoming ports
-    1. Set up health check to hit open endpoint
 
 1. Prepare a task definition file for your app, including each container you have for the app. Then duplicate & update the task definition for each environment. You should end up with 1 task definition for each environment, with each task definition declaring all the containers it needs for the app, each pointing to the ECR app image, and each containing the appropriate settings for its environment (ports to expose, etc).
-    - A sample task definition for an API app that uses an app contianer & database container is available in a json file in this source code. You can update it and use it. 
-    - You can generate a task definition file from a Docker compose file with the ecs-cli, like this `ecs-cli compose -f *<docker compose file>* create`.
+    - The task definitions are available in json files in this source code. You must add in the AWS account number.
+    - Note: you can generate a task definition file from a Docker compose file with the ecs-cli, like this `ecs-cli compose -f *<docker compose file>* create`.
 
 1. Create the task deinitions in ECS, by going into the ECS UI, going to Task Definitions and creating one. You can paste in the task definition json.
 
-1. Create a service for each instance of the app (dev/stg/prod): go to ECS > Clusters > desired cluster and creating one. Choosing the task definition, and set the minumum healthy count to 0 (so all containers can be stopped before starting an updated one). Repeat for each environment. This should start your app instances.
+1. Create a service for each taak definition (instance of the app - dev/stg/prod): go to ECS > Clusters > desired cluster and creating one. Choosing the task definition, setting tasks to 1, and set the minumum healthy count to 0 (so all containers can be stopped before starting an updated one). Repeat for each environment. This should start your app instances.
 
 ## *Part 3.* Setting up CI for deployment
 
@@ -239,15 +233,15 @@ TODO: - AFTER TASK DEF & SVC (APP START)?
     AWS_DEFAULT_REGION
     CLUSTER_NAME (ECS cluster name)
     *Per environment*
-    SERVICE (the name of the ECS service linked to the task definition for your app)
-    IMAGE_NAME (base name of your docker iamge from your docker/compose file, i.e. my-app-dev)
+    SERVICE_BASENAME (the name of the ECS service linked to the task definition for your app)
+    IMAGE_BASENAME (base name of your docker iamge from your docker/compose file, i.e. my-app-dev)
 
-1. View the `.travis.yml` in this repo to see how the CI tool is set up. The image tagging, image repo push & deploy are triggered in this CI configuration file by calling a bash script. The script deploys based on branch.
+1. View the `.travis.yml` in this repo to see how the CI tool is set up. The image tagging, image repo push & deploy are triggered in this CI configuration file by calling  bash scripts. Deploys are based on branch.
 
-If you aren't using TravisCI, you must create a new configuration file for your respective CI tool (to replace .travis.yml), but only minor tweaks will be necessary for the required syntax, since the bash scripts do the heavy lifting and can be reused.
+If you aren't using TravisCI, you must create a new configuration file for your respective CI tool (to replace `.travis.yml`), but only minor tweaks will be necessary for the required syntax, since the bash scripts do the heavy lifting and can be reused.
 
 1. Deployment based on branch
 
-    - master *deploys to* my-app-dev, staging *deploys to* staging, production *deploys to* prod
+    - master *deploys to* my-app-demo, staging *deploys to* staging, production *deploys to* prod
 
 1. Put the CI configuration file (.travis.yml in this sample) it into the root of your repo, configure the CI tool with the push/PR build options you want, ensure the environment variables above are in, and check in to your repo to trigger a build.

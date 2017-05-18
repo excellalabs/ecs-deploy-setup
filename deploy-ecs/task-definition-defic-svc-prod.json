@@ -31,7 +31,10 @@
             "name": "defic-svc-prod",
             "ulimits": null,
             "dockerSecurityOptions": [],
-            "environment": [],
+            "environment" : [
+                { "name" : "ASPNETCORE_ENVIRONMENT", "value" : "Production" },
+                { "name" : "ASPNETCORE_URLS", "value" : "http://*:5002" }
+            ],
             "links": [
                 "postgres-defic"
             ],
@@ -66,7 +69,7 @@
             "mountPoints": [
                 {
                     "containerPath": "/var/lib/postgresql/data",
-                    "sourceVolume": "volume-0",
+                    "sourceVolume": "volume-app-prod",
                     "readOnly": false
                 }
             ],
@@ -98,7 +101,7 @@
             "host": {
                 "sourcePath": "postgres"
             },
-            "name": "volume-0"
+            "name": "volume-app-prod"
         }
     ],
     "family": "defic-svc-prod"
