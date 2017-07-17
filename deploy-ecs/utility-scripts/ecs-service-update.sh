@@ -1,5 +1,5 @@
 CLUSTER_NAME=aurora
-SERVICE_NAME=defic-svc-dev
-TASK_DEFINITION=defic-svc-dev
+SERVICE_NAME=my-app-dev
+TASK_DEFINITION=my-app-dev
 
 aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition $TASK_DEFINITION

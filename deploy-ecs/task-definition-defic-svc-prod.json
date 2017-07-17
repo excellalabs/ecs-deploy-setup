@@ -28,7 +28,7 @@
                 "./go.sh"
             ],
             "mountPoints": [],
-            "name": "defic-svc-prod",
+            "name": "my-app-prod",
             "ulimits": null,
             "dockerSecurityOptions": [],
             "environment" : [
@@ -40,7 +40,7 @@
             ],
             "workingDirectory": null,
             "readonlyRootFilesystem": false,
-            "image": "<ACCOUNT ID>.dkr.ecr.us-east-1.amazonaws.com/defic-svc",
+            "image": "<ACCOUNT ID>.dkr.ecr.us-east-1.amazonaws.com/my-app",
             "command": [],
             "user": null,
             "dockerLabels": {},
@@ -104,5 +104,5 @@
             "name": "volume-app-prod"
         }
     ],
-    "family": "defic-svc-prod"
+    "family": "my-app-prod"
 }
