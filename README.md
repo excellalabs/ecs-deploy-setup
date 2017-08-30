@@ -245,11 +245,4 @@ You must set up the bucket for the backup job (embedded in the production versio
 
 # Additional Resources
 
-- [ECS with a CI pipeline Overview slide deck](AWS-ECS-with-a-CI-pipeline-Overview.pptx)
-    
-    *Includes ECS key docs on last slide:*
-
-        - Overview & Key Concepts
-        - Reference architecture for ECS w/deployment pipeline (CloudFormation)
-        - ECS IAM Policies
-        - Core Setup Steps
+- [ECS with a CI pipeline Overview slide deck](https://www.slideshare.net/wynvandevanter/aws-elastic-container-service-ecs-with-a-ci-pipeline-overview)
